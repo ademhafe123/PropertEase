@@ -1,0 +1,6 @@
+@PropertEase_HostAddress = http://localhost:5287
+
+GET {{PropertEase_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
