@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PropertEase.Dtos.Property;
 using PropertEase.Dtos.User;
 
 namespace PropertEase
@@ -8,6 +9,11 @@ namespace PropertEase
         public AutoMapperProfile()
         {
             CreateMap<User, GetUserDto>();
+            CreateMap<GetUserDto, User>();
+            CreateMap<Property, AddPropertyDto>();
+            CreateMap<AddPropertyDto, Property>();
+            CreateMap<GetPropertyDto, Property>();
+            CreateMap<Property, GetPropertyDto>();
         }
     }
 }

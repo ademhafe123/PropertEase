@@ -27,9 +27,6 @@ namespace PropertEase.Data
                 response.Message = "User does not exist";
                 return response;
             }
-            //VerifyPassword(user, password);
-            //if true create token
-            //else response.message="Incorrect password"
             if (!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
