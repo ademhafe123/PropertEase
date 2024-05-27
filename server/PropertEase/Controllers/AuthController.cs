@@ -29,7 +29,7 @@ namespace PropertEase.Controllers
                 Role = user.Role,
                 UserName = user.UserName,
                 PhoneNumber = user.PhoneNumber,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.Today,
             }, user.Password);
 
             if (!response.Success)
