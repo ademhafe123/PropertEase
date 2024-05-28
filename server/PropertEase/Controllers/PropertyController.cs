@@ -25,7 +25,7 @@ namespace PropertEase.Controllers
         //ADD PROPERTY
         [HttpPost("AddProperty")]
         [Authorize]
-        public async Task<ActionResult<ServiceResponse<string>>> AddProperty(AddPropertyDto newProperty)
+        public async Task<ActionResult<ServiceResponse<string>>> AddProperty([FromForm] AddPropertyWithImages newPropertyWithImages)
         {
             var claimUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(claimUserId) || !int.TryParse(claimUserId, out int userId))
@@ -33,7 +33,7 @@ namespace PropertEase.Controllers
                 return BadRequest("User ID not found in claims or invalid.");
             }
 
-            var response = await _propertyService.AddProperty(newProperty, userId);
+            var response = await _propertyService.AddProperty(newPropertyWithImages.Property, userId, newPropertyWithImages.Images);
             if (!response.Success)
             {
                 return BadRequest(response);

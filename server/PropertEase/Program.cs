@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PropertEase;
+using PropertEase.Services.ImageService;
 using PropertEase.Services.PropertyService;
 using PropertEase.Services.UserService;
 using Swashbuckle.AspNetCore.Filters;
@@ -30,7 +32,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.ApiKey
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
-
+    options.OperationFilter<FileUploadOperationFilter>();
 });
 
 //Add Authorization
@@ -54,6 +56,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 

@@ -10,6 +10,7 @@ namespace PropertEase.Data
         }
         public DbSet<User> Users => Set<User>();
         public DbSet<Property> Properties => Set<Property>();
+        public DbSet<Image> Images => Set<Image>();
     }
 
 

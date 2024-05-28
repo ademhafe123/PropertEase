@@ -14,6 +14,7 @@
         public int Bathrooms { get; set; }
         public int Area { get; set; }
         public string HomeAppliances { get; set; } = string.Empty;
+        public ICollection<Image>? Images { get; set; } = new List<Image>();
         public User? ListedBy { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Today;
 

@@ -15,5 +15,6 @@
         public string HomeAppliances { get; set; } = string.Empty;
         public int ListedById { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<string> ImagePaths { get; set; } = new List<string>();
     }
 }

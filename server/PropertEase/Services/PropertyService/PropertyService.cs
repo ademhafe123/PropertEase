@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PropertEase.Dtos.Property;
+using PropertEase.Services.ImageService;
 using PropertEase.Services.UserService;
 
 namespace PropertEase.Services.PropertyService
@@ -10,13 +11,15 @@ namespace PropertEase.Services.PropertyService
         private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public PropertyService(DataContext dataContext, IMapper mapper, IUserService userService)
+        private readonly IImageService _imageService;
+        public PropertyService(DataContext dataContext, IMapper mapper, IUserService userService, IImageService imageService)
         {
             _dataContext = dataContext;
             _mapper = mapper;
             _userService = userService;
+            _imageService = imageService;
         }
-        public async Task<ServiceResponse<string>> AddProperty(AddPropertyDto newProperty, int userId)
+        public async Task<ServiceResponse<string>> AddProperty(AddPropertyDto newProperty, int userId, List<IFormFile> images)
         {
             var response = new ServiceResponse<string>();
             if (newProperty is null)
@@ -34,6 +37,17 @@ namespace PropertEase.Services.PropertyService
             }
             Property property = _mapper.Map<Property>(newProperty);
             property.ListedBy = user;
+            //Make a call to _imageService and forward the images
+            //Add the images to the Images field of the property object
+            var imageFilePaths = await _imageService.SaveImagesAsync(images);
+            foreach (var filePath in imageFilePaths)
+            {
+                property.Images?.Add(new Image
+                {
+                    FilePath = filePath,
+                    Property = property
+                });
+            }
 
             _dataContext.Properties.Add(property);
             await _dataContext.SaveChangesAsync();
@@ -50,17 +64,23 @@ namespace PropertEase.Services.PropertyService
 
             try
             {
-                var foundProperty = await _dataContext.Properties.FirstOrDefaultAsync(p => p.Id == propertyId);
+                var foundProperty = await _dataContext.Properties
+                    .Include(p => p.Images)  // Include the Images
+                    .Include(p => p.ListedBy)
+                    .FirstOrDefaultAsync(p => p.Id == propertyId);
                 if (foundProperty is null)
                 {
                     response.Success = false;
                     response.Message = "Property not found";
                     return response;
                 }
-                response.Message = "Property found successfully";
+
                 GetPropertyDto property = _mapper.Map<GetPropertyDto>(foundProperty);
+                property.ImagePaths = foundProperty.Images.Select(i => i.FilePath).ToList();
                 property.ListedById = userId;
+
                 response.Data = property;
+                response.Message = "Property found successfully";
             }
             catch (Exception ex)
             {
@@ -79,7 +99,9 @@ namespace PropertEase.Services.PropertyService
 
             try
             {
-                var dbProperties = await _dataContext.Properties.Include(p => p.ListedBy).ToListAsync();
+                var dbProperties = await _dataContext.Properties
+                    .Include(p => p.Images)
+                    .Include(p => p.ListedBy).ToListAsync();
 
                 if (dbProperties is null)
                 {
@@ -93,6 +115,7 @@ namespace PropertEase.Services.PropertyService
                     if (p.ListedBy != null)
                     {
                         propertyDto.ListedById = p.ListedBy.Id;
+                        propertyDto.ImagePaths = p.Images.Select(i => i.FilePath).ToList();
                     }
                     return propertyDto;
                 }).ToList();
@@ -115,6 +138,7 @@ namespace PropertEase.Services.PropertyService
             {
                 var userPropertiesDb = await _dataContext.Properties
                     .Where(p => p.ListedBy.Id == userId)
+                    .Include(p => p.Images)
                     .Include(p => p.ListedBy) //This is just to make sure that this is loaded (Good practice)
                     .ToListAsync();
                 if (userPropertiesDb is null)
@@ -128,6 +152,7 @@ namespace PropertEase.Services.PropertyService
                     if (p.ListedBy != null)
                     {
                         propertyDto.ListedById = p.ListedBy.Id;
+                        propertyDto.ImagePaths = p.Images.Select(i => i.FilePath).ToList();
                     }
                     return propertyDto;
                 }).ToList();
@@ -183,5 +208,8 @@ namespace PropertEase.Services.PropertyService
             }
             return response;
         }
+
+
+
     }
 }
