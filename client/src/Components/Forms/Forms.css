@@ -1,0 +1,10 @@
+.form-title {
+  font-size: 2rem;
+  text-align: center;
+  color: var(--black);
+}
+
+.form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}

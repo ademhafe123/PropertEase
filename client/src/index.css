@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", "sans-serif";
+}
+
+:root {
+  --black: #09221f;
+  --light-black: #09221fa8;
+  --light-blue: #1e63be9e;
+  --blue: #1e63be;
+  --dark-blue: #093267;
+  --yellow: #eace6c;
+  --white: #f3f4f5;
+}
