@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace PropertEase.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("auth/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
